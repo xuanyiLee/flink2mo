@@ -1,0 +1,27 @@
+name: transfer data from mysql to matrixone with datax
+
+# 控制工作流触发的事件
+on:
+  schedule:
+    # 每小时运行一次工作流程
+    - cron: '0 16 * * *'
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v2
+
+      # 设置运行环境
+      - name: Setup Environment
+        run: |
+          make grant_priv
+
+      # 运行迁移脚本
+      - name: Run transfer data script
+        run: ./gen_data -mysqlPwd ${{secrets.MYSQLPWD}}
+
+      # 运行检测脚本
+      - name: Run check script
+        run: ./check -mysqlPwd ${{secrets.MYSQLPWD}} -moPwd ${{secrets.MOPWD}}
