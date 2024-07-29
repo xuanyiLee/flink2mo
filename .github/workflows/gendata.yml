@@ -1,7 +1,8 @@
-name: transfer data from mysql to matrixone with datax
+name: transfer data from mysql to matrixone with flink
 
 # 控制工作流触发的事件
 on:
+  workflow_dispatch: # 手动触发工作流
   schedule:
     # 每小时运行一次工作流程
     - cron: '0 16 * * *'
