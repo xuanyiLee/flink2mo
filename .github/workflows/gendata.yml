@@ -20,7 +20,7 @@ jobs:
 
       # 运行迁移脚本
       - name: Run transfer data script
-        run: ./gen_data -mysqlPwd ${{secrets.MYSQLPWD}}
+        run: ./gen_data -mysqlPwd ${{secrets.MYSQLPWD}} -num 10000
 
       # 运行检测脚本
       - name: Run check script
