@@ -1,4 +1,4 @@
-name: transfer data from mysql to matrixone with datax
+name: transfer data from mysql to matrixone with flink
 
 # 控制工作流触发的事件
 on:
