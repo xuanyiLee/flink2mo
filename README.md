@@ -83,7 +83,14 @@ use test;
   PRIMARY KEY (`id`)
 ) ;
 ```
-
+在mysql中建表
+```
+ CREATE TABLE `modify_record` (
+  `id` bigint NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+```
 
 
 # 创建数据&比较迁移结果
