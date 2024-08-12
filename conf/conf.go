@@ -56,7 +56,6 @@ func (c *Conf) loadMysqlConf(cfg *ini.File, dataSource string) error {
 		HOST:     cfg.Section(dataSource).Key("host").String(),
 		Port:     port,
 		Username: cfg.Section(dataSource).Key("username").String(),
-		Password: cfg.Section(dataSource).Key("password").String(),
 		DataBase: cfg.Section(dataSource).Key("database").String(),
 	}
 	switch dataSource {

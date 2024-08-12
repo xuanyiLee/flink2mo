@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"net/url"
 	"os"
 )
 
@@ -22,8 +23,8 @@ func main() {
 	mysqlCnf = conf.MyCnf
 	moCnf = conf.MoConf
 	var mysqlPwd, moPwd string
-	flag.StringVar(&mysqlPwd, "mysqlPwd", "", "password of mysql database")
-	flag.StringVar(&moPwd, "moPwd", "", "password of matrixone database")
+	flag.StringVar(&mysqlPwd, "mysqlPwd", "1Qaz2wsx.", "password of mysql database")
+	flag.StringVar(&moPwd, "moPwd", "1Qaz2wsx", "password of matrixone database")
 	flag.Parse()
 
 	if mysqlPwd == "" || moPwd == "" {
@@ -36,25 +37,43 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
-
 	moConn, err := getDBConn("matrixone")
 	if err != nil {
 		os.Exit(1)
 	}
 
-	//arr := strings.Split(cfg.Tables, ",")
-	var mysqlNum, moNum int64
+	//检查新增、删除是否同步
 	table := "mysql_dx"
-	//for _, table := range arr {
+	var mysqlNum, moNum int64
 	mysqlConn.Table(table).Count(&mysqlNum)
 	moConn.Table(table).Count(&moNum)
 	if mysqlNum != moNum {
 		fmt.Println(fmt.Sprintf("[Inconsistent data error]:%s table mysql num %v,mo num %v", table, mysqlNum, moNum))
 		os.Exit(1)
 	}
-	mysqlNum = 0
-	moNum = 0
-	//}
+	//检查修改是否同步
+	type Record struct {
+		Id   int64
+		Name string
+	}
+	var list []Record
+	err = mysqlConn.Table("modify_record").Find(&list).Error
+	if err != nil {
+		fmt.Println("查询修改记录数据失败:", err)
+		os.Exit(1)
+	}
+	for _, v := range list {
+		var num int64
+		err = moConn.Table(table).Where("id=? and name=?", v.Id, v.Name).Count(&num).Error
+		if err != nil {
+			fmt.Println(fmt.Sprintf("id:%v,name:%s,err:%v", v.Id, v.Name, err))
+			os.Exit(1)
+		}
+		if num == 0 {
+			fmt.Println(fmt.Sprintf("id:%v,name:%s", v.Id, v.Name))
+			os.Exit(1)
+		}
+	}
 
 	os.Exit(0)
 }
@@ -67,7 +86,10 @@ func getDBConn(dataSource string) (*gorm.DB, error) {
 	case "matrixone":
 		cnf = conf.MoConf
 	}
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", cnf.Username, cnf.Password, cnf.HOST, cnf.Port, cnf.DataBase) //MO
+
+	username := url.QueryEscape(cnf.Username)
+	fmt.Println(username)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, cnf.Password, cnf.HOST, cnf.Port, cnf.DataBase) //MO
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println(fmt.Sprintf("%s Database Connection Failed", dataSource)) //Connection failed

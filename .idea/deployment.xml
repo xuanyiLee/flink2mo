@@ -6,7 +6,7 @@
       <paths name="flink2mo">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/flink2mo" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/actions-runner/flink/flink2mo/flink2mo" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
