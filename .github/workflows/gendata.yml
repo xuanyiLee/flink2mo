@@ -26,5 +26,5 @@ jobs:
       # 运行检测脚本
       - name: Run check script
         run: |
-          sleep 300
+          sleep 1800
           ./check -mysqlPwd ${{secrets.MYSQLPWD}} -moPwd ${{secrets.MOPWD}}
