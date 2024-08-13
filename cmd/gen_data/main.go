@@ -48,7 +48,7 @@ func main() {
 	}
 
 	username := url.QueryEscape(cnf.Username)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", username, cnf.Password, cnf.HOST, cnf.Port, cnf.DataBase)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", username, mysqlPwd, cnf.HOST, cnf.Port, cnf.DataBase)
 	// 建立数据库连接
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
