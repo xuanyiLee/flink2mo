@@ -31,13 +31,12 @@ func main() {
 		fmt.Println(fmt.Sprintf("mysql passwprd:%s,mo password:%s", mysqlPwd, moPwd))
 		os.Exit(1)
 	}
-	mysqlCnf.Password, moCnf.Password = mysqlPwd, moPwd
 
-	mysqlConn, err := getDBConn("mysql")
+	mysqlConn, err := getDBConn("mysql", mysqlPwd)
 	if err != nil {
 		os.Exit(1)
 	}
-	moConn, err := getDBConn("matrixone")
+	moConn, err := getDBConn("matrixone", moPwd)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -78,7 +77,7 @@ func main() {
 	os.Exit(0)
 }
 
-func getDBConn(dataSource string) (*gorm.DB, error) {
+func getDBConn(dataSource string, password string) (*gorm.DB, error) {
 	var cnf conf.MysqlConf
 	switch dataSource {
 	case "mysql":
@@ -88,8 +87,8 @@ func getDBConn(dataSource string) (*gorm.DB, error) {
 	}
 
 	username := url.QueryEscape(cnf.Username)
-	fmt.Println(username)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, cnf.Password, cnf.HOST, cnf.Port, cnf.DataBase) //MO
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, cnf.HOST, cnf.Port, cnf.DataBase) //MO
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println(fmt.Sprintf("%s Database Connection Failed", dataSource)) //Connection failed
