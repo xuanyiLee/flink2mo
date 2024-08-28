@@ -82,6 +82,7 @@ func main() {
 // 生成模拟数据数据
 func generateOrders(ordersChan chan<- Order) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	time.Sleep(2 * time.Second)
 	for i := 0; i < num; i++ {
 		go func() {
 			wg.Add(1)
